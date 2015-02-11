@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # This file invokes cmake and generates the build system for gcc.
 #
@@ -34,6 +34,8 @@ OS=`uname`
 if [ $OS = "Linux" ]; then
   llvm_prefix="llvm-"
 elif [ $OS = "Darwin" ]; then
+  llvm_prefix=""
+elif [ $OS = "FreeBSD" ]; then
   llvm_prefix=""
 else
   echo "Unable to determine build platform"
