@@ -9,6 +9,10 @@ include_directories(include)
 
 # Compile options
 
+if(CMAKE_SYSTEM_NAME STREQUAL FreeBSD)
+	add_definitions(-DHAVE_BSD_REGS_T=1)
+endif(CMAKE_SYSTEM_NAME STREQUAL FreeBSD)
+
 if(CMAKE_SYSTEM_NAME STREQUAL Darwin)
   add_definitions(-D_TARGET_MAC64)
   set(PLATFORM_SOURCES
@@ -31,6 +35,7 @@ add_definitions(-DCORECLR=1)
 add_definitions(-DPIC=1)
 add_definitions(-DBIT64=1)
 add_definitions(-D_WIN64=1)
+
 
 add_compile_options(-fno-builtin)
 add_compile_options(-fPIC)
@@ -156,6 +161,15 @@ target_link_libraries(CoreClrPal
   rt
 )
 endif(CMAKE_SYSTEM_NAME STREQUAL Linux)
+
+if(CMAKE_SYSTEM_NAME STREQUAL FreeBSD)
+target_link_libraries(CoreClrPal
+  pthread
+  rt
+)
+endif(CMAKE_SYSTEM_NAME STREQUAL FreeBSD)
+
+
 
 if(CMAKE_SYSTEM_NAME STREQUAL Darwin)
   find_library(COREFOUNDATION CoreFoundation)
