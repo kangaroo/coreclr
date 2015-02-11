@@ -122,10 +122,10 @@ because gcc will complain about %I64d and %S
 #define HAVE_TM_GMTOFF 1
 
 // Define as 1 if the BSD struct reg is supported.
-#define HAVE_BSD_REGS_T 0
+#define HAVE_BSD_REGS_T 1 
 
 // Define as 1 if ptrace's struct pt_regs is supported.
-#define HAVE_PT_REGS 1
+#define HAVE_PT_REGS 0 
 
 // Define as 1 if mcontext_t contains a gregset_t.
 #define HAVE_GREGSET_T 1

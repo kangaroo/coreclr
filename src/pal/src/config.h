@@ -1,6 +1,6 @@
 #if defined(__APPLE__)
 #include "config.h.osx"
-#if defined(FreeBSD)
+#elif defined(__FreeBSD__)
 #include "config.h.freebsd"
 #else
 #include "config.h.linux"
