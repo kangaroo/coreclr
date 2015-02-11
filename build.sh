@@ -83,11 +83,7 @@ build_coreclr()
     # processors available to a single process.
 	echo OS = $OS 
     if [ `uname` = "FreeBSD" ]; then
-       # NumProc=$(($(sysctl hw.ncpu)+1))
-       # NumProc=$(($('/sbin/sysctl hw.ncpu')+1))
-       # NumProc=$(`sysctl -n hw.ncpu`) + 1
-        NumProc=2
-       
+       NumProc=`sysctl hw.ncpu | awk '{ print $2+1 }'`
     else 
        NumProc=$(($(getconf _NPROCESSORS_ONLN)+1))
     fi
