@@ -1,5 +1,7 @@
-.NET Core Runtime (CoreCLR)
+.NET Core Runtime (CoreCLR) on FreeBSD/amd64
 ===
+
+This is a fork of coreclr to add build support for FreeBSD/amd64. So far build scripts have been extended with FreeBSD targets, but coreclr fails to compile.
 
 |   |Linux|Windows|
 |:-:|:-:|:-:|
@@ -84,3 +86,4 @@ There are many .NET projects on GitHub.
 [coreclr blog post]: http://blogs.msdn.com/b/dotnet/archive/2015/02/03/coreclr-is-now-open-source.aspx
 [corefx]: http://github.com/dotnet/corefx
 [coreclr]: http://github.com/dotnet/coreclr
+
