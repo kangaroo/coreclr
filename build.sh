@@ -81,7 +81,16 @@ build_coreclr()
     # Get the number of processors available to the scheduler
     # Other techniques such as `nproc` only get the number of
     # processors available to a single process.
-    NumProc=$(($(getconf _NPROCESSORS_ONLN)+1))
+	echo OS = $OS 
+    if [ `uname` = "FreeBSD" ]; then
+       # NumProc=$(($(sysctl hw.ncpu)+1))
+       # NumProc=$(($('/sbin/sysctl hw.ncpu')+1))
+       # NumProc=$(`sysctl -n hw.ncpu`) + 1
+        NumProc=2
+       
+    else 
+       NumProc=$(($(getconf _NPROCESSORS_ONLN)+1))
+    fi
     
     # Build CoreCLR
     
