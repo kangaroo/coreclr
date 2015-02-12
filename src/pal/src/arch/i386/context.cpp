@@ -287,15 +287,21 @@ BOOL CONTEXT_GetRegisters(DWORD processId, ucontext_t *registers)
     {
 #if HAVE_PT_REGS
         struct pt_regs ptrace_registers;
+        if (ptrace((__ptrace_request)PT_GETREGS, processId, (caddr_t) &ptrace_registers, 0) == -1)
+	  {
+            ASSERT("Failed ptrace(PT_GETREGS, processId:%d) errno:%d (%s)\n",
+                   processId, errno, strerror(errno));
+	  }
+
 #elif HAVE_BSD_REGS_T
         struct reg ptrace_registers;
-#endif
 
-        if (ptrace((__ptrace_request)PT_GETREGS, processId, (caddr_t) &ptrace_registers, 0) == -1)
+        if (ptrace(PT_GETREGS, processId, (caddr_t) &ptrace_registers, 0) == -1)
         {
             ASSERT("Failed ptrace(PT_GETREGS, processId:%d) errno:%d (%s)\n",
                    processId, errno, strerror(errno));
         }
+#endif
 
 #if HAVE_PT_REGS
 #define ASSIGN_REG(reg) MCREG_##reg(registers->uc_mcontext) = PTREG_##reg(ptrace_registers);
