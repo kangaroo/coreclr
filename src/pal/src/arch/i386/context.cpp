@@ -1,6 +1,6 @@
 //
 // Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information. 
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
 //
 
 /*++
@@ -25,7 +25,7 @@ Abstract:
 #include "pal/context.h"
 #include "pal/debug.h"
 
-#include <sys/ptrace.h> 
+#include <sys/ptrace.h>
 #include <errno.h>
 #include <unistd.h>
 
@@ -95,22 +95,6 @@ void CONTEXT_CaptureContext(LPCONTEXT lpContext)
 #endif // BIT64
 
 #define MCREG_EFlags(mc)    ((mc).gregs[REG_EFL])
-
-#else // HAVE_GREGSET_T
-
-#define MCREG_Ebx(mc)       ((mc).mc_ebx)
-#define MCREG_Ecx(mc)       ((mc).mc_ecx)
-#define MCREG_Edx(mc)       ((mc).mc_edx)
-#define MCREG_Esi(mc)       ((mc).mc_esi)
-#define MCREG_Edi(mc)       ((mc).mc_edi)
-#define MCREG_Ebp(mc)       ((mc).mc_ebp)
-#define MCREG_Eax(mc)       ((mc).mc_eax)
-#define MCREG_Eip(mc)       ((mc).mc_eip)
-#define MCREG_SegCs(mc)     ((mc).mc_cs)
-#define MCREG_EFlags(mc)    ((mc).mc_eflags)
-#define MCREG_Esp(mc)       ((mc).mc_esp)
-#define MCREG_SegSs(mc)     ((mc).mc_ss)
-
 #endif // HAVE_GREGSET_T
 
 
@@ -161,6 +145,29 @@ void CONTEXT_CaptureContext(LPCONTEXT lpContext)
 
 #if HAVE_BSD_REGS_T
 
+#ifdef BIT64
+#define BSDREG_Rbx(reg)    ((reg).r_rbx)
+#define BSDREG_Rcx(reg)    ((reg).r_rcx)
+#define BSDREG_Rdx(reg)    ((reg).r_rdx)
+#define BSDREG_Rsi(reg)    ((reg).r_rsi)
+#define BSDREG_Rdi(reg)    ((reg).r_rdi)
+#define BSDREG_Rbp(reg)    ((reg).r_rbp)
+#define BSDREG_Rax(reg)    ((reg).r_rax)
+#define BSDREG_Rip(reg)    ((reg).r_rip)
+#define BSDREG_SegCs(reg)  ((reg).r_cs)
+#define BSDREG_SegSs(reg)  ((reg).r_ss)
+#define BSDREG_Rsp(reg)    ((reg).r_rsp)
+#define BSDREG_R8(reg)     ((reg).r_r8)
+#define BSDREG_R9(reg)     ((reg).r_r9)
+#define BSDREG_R10(reg)    ((reg).r_r10)
+#define BSDREG_R11(reg)    ((reg).r_r11)
+#define BSDREG_R12(reg)    ((reg).r_r12)
+#define BSDREG_R13(reg)    ((reg).r_r13)
+#define BSDREG_R14(reg)    ((reg).r_r14)
+#define BSDREG_R15(reg)    ((reg).r_r15)
+
+#else // BIT64
+
 #define BSDREG_Ebx(reg)     ((reg).r_ebx)
 #define BSDREG_Ecx(reg)     ((reg).r_ecx)
 #define BSDREG_Edx(reg)     ((reg).r_edx)
@@ -170,9 +177,12 @@ void CONTEXT_CaptureContext(LPCONTEXT lpContext)
 #define BSDREG_Eax(reg)     ((reg).r_eax)
 #define BSDREG_Eip(reg)     ((reg).r_eip)
 #define BSDREG_SegCs(reg)   ((reg).r_cs)
-#define BSDREG_EFlags(reg)  ((reg).r_eflags)
 #define BSDREG_Esp(reg)     ((reg).r_esp)
 #define BSDREG_SegSs(reg)   ((reg).r_ss)
+
+#endif
+
+#define BSDREG_EFlags(reg)  ((reg).r_eflags)
 
 #endif // HAVE_BSD_REGS_T
 
