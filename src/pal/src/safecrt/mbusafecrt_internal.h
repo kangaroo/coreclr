@@ -45,7 +45,8 @@ typedef __builtin_va_list va_list;
 #endif
 #define WEOF -1
 
-#define CASSERT(p) extern int sanity_check_dummy[1+((!(p))*(-2))];
+//#define CASSERT(p) extern int sanity_check_dummy[1+((!(p))*(-2))];
+#define CASSERT(p)
 
 extern tSafeCRT_AssertFuncPtr sMBUSafeCRTAssertFunc;
 
