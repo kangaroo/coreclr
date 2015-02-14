@@ -97,7 +97,6 @@ void CONTEXT_CaptureContext(LPCONTEXT lpContext)
 #define MCREG_EFlags(mc)    ((mc).gregs[REG_EFL])
 #endif // HAVE_GREGSET_T
 
-
 #if HAVE_PT_REGS
 
 #ifdef BIT64
@@ -142,7 +141,6 @@ void CONTEXT_CaptureContext(LPCONTEXT lpContext)
 
 #endif // HAVE_PT_REGS
 
-
 #if HAVE_BSD_REGS_T
 
 #ifdef BIT64
@@ -166,24 +164,30 @@ void CONTEXT_CaptureContext(LPCONTEXT lpContext)
 #define BSDREG_R14(reg)    ((reg).r_r14)
 #define BSDREG_R15(reg)    ((reg).r_r15)
 
-#else // BIT64
+#define BSDCTX_Rbx(reg)    ((reg).mc_rbx)
+#define BSDCTX_Rcx(reg)    ((reg).mc_rcx)
+#define BSDCTX_Rdx(reg)    ((reg).mc_rdx)
+#define BSDCTX_Rsi(reg)    ((reg).mc_rsi)
+#define BSDCTX_Rdi(reg)    ((reg).mc_rdi)
+#define BSDCTX_Rbp(reg)    ((reg).mc_rbp)
+#define BSDCTX_Rax(reg)    ((reg).mc_rax)
+#define BSDCTX_Rip(reg)    ((reg).mc_rip)
+#define BSDCTX_SegCs(reg)  ((reg).mc_cs)
+#define BSDCTX_SegSs(reg)  ((reg).mc_ss)
+#define BSDCTX_Rsp(reg)    ((reg).mc_rsp)
+#define BSDCTX_R8(reg)     ((reg).mc_r8)
+#define BSDCTX_R9(reg)     ((reg).mc_r9)
+#define BSDCTX_R10(reg)    ((reg).mc_r10)
+#define BSDCTX_R11(reg)    ((reg).mc_r11)
+#define BSDCTX_R12(reg)    ((reg).mc_r12)
+#define BSDCTX_R13(reg)    ((reg).mc_r13)
+#define BSDCTX_R14(reg)    ((reg).mc_r14)
+#define BSDCTX_R15(reg)    ((reg).mc_r15)
 
-#define BSDREG_Ebx(reg)     ((reg).r_ebx)
-#define BSDREG_Ecx(reg)     ((reg).r_ecx)
-#define BSDREG_Edx(reg)     ((reg).r_edx)
-#define BSDREG_Esi(reg)     ((reg).r_esi)
-#define BSDREG_Edi(reg)     ((reg).r_edi)
-#define BSDREG_Ebp(reg)     ((reg).r_ebp)
-#define BSDREG_Eax(reg)     ((reg).r_eax)
-#define BSDREG_Eip(reg)     ((reg).r_eip)
-#define BSDREG_SegCs(reg)   ((reg).r_cs)
-#define BSDREG_Esp(reg)     ((reg).r_esp)
-#define BSDREG_SegSs(reg)   ((reg).r_ss)
+#define BSDREG_EFlags(reg)  ((reg).r_rflags)
+#define BSDCTX_EFlags(reg)  ((reg).mc_rflags)
 
 #endif
-
-#define BSDREG_EFlags(reg)  ((reg).r_eflags)
-
 #endif // HAVE_BSD_REGS_T
 
 #ifdef BIT64
@@ -285,7 +289,7 @@ BOOL CONTEXT_GetRegisters(DWORD processId, ucontext_t *registers)
             goto EXIT;
         }
 
-#define ASSIGN_REG(reg) MCREG_##reg(registers->uc_mcontext) = BSDREG_##reg(bsd_registers);
+#define ASSIGN_REG(reg) BSDREG_##reg(bsd_registers);
         ASSIGN_ALL_REGS
 #undef ASSIGN_REG
 
@@ -297,10 +301,11 @@ BOOL CONTEXT_GetRegisters(DWORD processId, ucontext_t *registers)
     {
 #if HAVE_PT_REGS
         struct pt_regs ptrace_registers;
-        if (ptrace((__ptrace_request)PT_GETREGS, processId, (caddr_t) &ptrace_registers, 0) == -1)
+        if (ptrace(PT_GETREGS, processId, (caddr_t) &ptrace_registers, 0) == -1)
 	  {
             ASSERT("Failed ptrace(PT_GETREGS, processId:%d) errno:%d (%s)\n",
                    processId, errno, strerror(errno));
+            goto EXIT;
 	  }
 
 #elif HAVE_BSD_REGS_T
@@ -310,13 +315,14 @@ BOOL CONTEXT_GetRegisters(DWORD processId, ucontext_t *registers)
         {
             ASSERT("Failed ptrace(PT_GETREGS, processId:%d) errno:%d (%s)\n",
                    processId, errno, strerror(errno));
+            goto EXIT;
         }
 #endif
 
 #if HAVE_PT_REGS
-#define ASSIGN_REG(reg) MCREG_##reg(registers->uc_mcontext) = PTREG_##reg(ptrace_registers);
+#define ASSIGN_REG(reg) PTREG_##reg(ptrace_registers);
 #elif HAVE_BSD_REGS_T
-#define ASSIGN_REG(reg) MCREG_##reg(registers->uc_mcontext) = BSDREG_##reg(ptrace_registers);
+#define ASSIGN_REG(reg) BSDREG_##reg(ptrace_registers);
 #endif
         ASSIGN_ALL_REGS
 #undef ASSIGN_REG
@@ -324,7 +330,7 @@ BOOL CONTEXT_GetRegisters(DWORD processId, ucontext_t *registers)
     
     bRet = TRUE;
 #if HAVE_BSD_REGS_T
-EXIT :
+EXIT:
     if (regFd != -1)
     {
         close(regFd);
@@ -399,7 +405,7 @@ CONTEXT_GetThreadContext(
             goto EXIT;
         }
 
-#define ASSIGN_REG(reg) lpContext->reg = MCREG_##reg(registers.uc_mcontext);
+#define ASSIGN_REG(reg) lpContext->reg = BSDCTX_##reg(registers.uc_mcontext);
         if (lpContext->ContextFlags & CONTEXT_CONTROL)
         {
             ASSIGN_CONTROL_REGS
@@ -469,7 +475,7 @@ CONTEXT_SetThreadContext(
     if (lpContext->ContextFlags  & 
         (CONTEXT_CONTROL | CONTEXT_INTEGER))
     {   
-        if (ptrace((__ptrace_request)PT_GETREGS, dwProcessId, (caddr_t)&ptrace_registers, 0) == -1)
+        if (ptrace(PT_GETREGS, dwProcessId, (caddr_t)&ptrace_registers, 0) == -1)
         {
             ASSERT("Failed ptrace(PT_GETREGS, processId:%d) errno:%d (%s)\n",
                    dwProcessId, errno, strerror(errno));
@@ -492,7 +498,7 @@ CONTEXT_SetThreadContext(
         }
 #undef ASSIGN_REG
         
-        if (ptrace((__ptrace_request)PT_SETREGS, dwProcessId, (caddr_t)&ptrace_registers, 0) == -1)
+        if (ptrace(PT_SETREGS, dwProcessId, (caddr_t)&ptrace_registers, 0) == -1)
         {
             ASSERT("Failed ptrace(PT_SETREGS, processId:%d) errno:%d (%s)\n",
                    dwProcessId, errno, strerror(errno));
@@ -530,7 +536,7 @@ void CONTEXTToNativeContext(CONST CONTEXT *lpContext, native_context_t *native,
         ASSERT("Invalid contextFlags in CONTEXTToNativeContext!");
     }
     
-#define ASSIGN_REG(reg) MCREG_##reg(native->uc_mcontext) = lpContext->reg;
+#define ASSIGN_REG(reg) BSDCTX_##reg(native->uc_mcontext) = lpContext->reg;
     ASSIGN_ALL_REGS
 #undef ASSIGN_REG
 }
@@ -560,7 +566,7 @@ void CONTEXTFromNativeContext(const native_context_t *native, LPCONTEXT lpContex
     }
     lpContext->ContextFlags = contextFlags;
 
-#define ASSIGN_REG(reg) lpContext->reg = MCREG_##reg(native->uc_mcontext);
+#define ASSIGN_REG(reg) lpContext->reg = BSDCTX_##reg(native->uc_mcontext);
     ASSIGN_ALL_REGS
 #undef ASSIGN_REG
 }
@@ -581,7 +587,7 @@ Return value :
 LPVOID CONTEXTGetPC(const native_context_t *context)
 {
 #ifdef BIT64
-    return (LPVOID)MCREG_Rip(context->uc_mcontext);
+    return (LPVOID)BSDCTX_Rip(context->uc_mcontext);
 #else
     return (LPVOID) MCREG_Eip(context->uc_mcontext);
 #endif // BIT64
