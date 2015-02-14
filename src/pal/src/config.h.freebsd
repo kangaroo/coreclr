@@ -440,19 +440,19 @@ because gcc will complain about %I64d and %S
 // Note that for autconfig substitution to properly occur the argument list
 // must not be present in this file -- it should only be in the appropriate
 // AC_DEFINE statement
-#define PAL_PTRACE(cmd, pid, addr, data) ptrace((cmd), (pid), (void*)(addr), (data))
+#define PAL_PTRACE(cmd, pid, addr, data) ptrace((cmd), (pid), (caddr_t)(addr), (data))
 
 // Define as the ptrace cmd value to attach to a process
-#define PAL_PT_ATTACH PTRACE_ATTACH
+#define PAL_PT_ATTACH PT_ATTACH
 
 // Define as the ptrace cmd value to detach from a process
-#define PAL_PT_DETACH PTRACE_DETACH
+#define PAL_PT_DETACH PT_DETACH
 
 // Define as the ptrace cmd value to read a word from a process's data space
-#define PAL_PT_READ_D PTRACE_PEEKDATA
+#define PAL_PT_READ_D PT_READ_D
 
 // Define as the ptrace cmd value to write a word to a process's data space
-#define PAL_PT_WRITE_D PTRACE_POKEDATA
+#define PAL_PT_WRITE_D PT_WRITE_D
 
 // Define as 1 if ISO locale names needs to be in lowercase
 #define HAVE_LOWERCASE_ISO_NAME 0

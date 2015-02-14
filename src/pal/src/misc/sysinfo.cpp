@@ -257,7 +257,11 @@ GlobalMemoryStatusEx(
     if (lpBuffer->ullTotalPhys > 0)
     {
 #if HAVE_SYSCONF
+#if defined(_SC_AVPHYS_PAGES)
         lpBuffer->ullAvailPhys = sysconf(_SC_AVPHYS_PAGES) * sysconf(_SC_PAGE_SIZE);
+#else
+        lpBuffer->ullAvailPhys = sysconf(_SC_PHYS_PAGES) * sysconf(_SC_PAGE_SIZE);
+#endif
         INT64 used_memory = lpBuffer->ullTotalPhys - lpBuffer->ullAvailPhys;
         lpBuffer->dwMemoryLoad = (DWORD)((used_memory * 100) / lpBuffer->ullTotalPhys);
 #else
