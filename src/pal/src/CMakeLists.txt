@@ -151,7 +151,6 @@ add_library(CoreClrPal
 )
 
 target_link_libraries(CoreClrPal
-  dl
   m
 )
 
@@ -165,7 +164,6 @@ endif(CMAKE_SYSTEM_NAME STREQUAL Linux)
 if(CMAKE_SYSTEM_NAME STREQUAL FreeBSD)
 target_link_libraries(CoreClrPal
   pthread
-  rt
 )
 endif(CMAKE_SYSTEM_NAME STREQUAL FreeBSD)
 
