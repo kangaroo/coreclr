@@ -33,6 +33,8 @@ else()
         # These options are used to force every object to be included even if it's unused.
         set(START_WHOLE_ARCHIVE -force_load)
         set(END_WHOLE_ARCHIVE )
+
+        set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-exported_symbols_list,${CMAKE_CURRENT_SOURCE_DIR}/coreclr.syms")
     endif(CMAKE_SYSTEM_NAME STREQUAL Darwin)
 
 endif (WIN32)
