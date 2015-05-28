@@ -25,6 +25,8 @@ else()
         # These options are used to force every object to be included even if it's unused.
         set(START_WHOLE_ARCHIVE -Wl,--whole-archive)
         set(END_WHOLE_ARCHIVE -Wl,--no-whole-archive) 
+
+        set(VERSION_SCRIPT -Wl,--version-script=${CMAKE_CURRENT_SOURCE_DIR}/coreclr.ver)
     endif(CMAKE_SYSTEM_NAME STREQUAL Linux OR CMAKE_SYSTEM_NAME STREQUAL FreeBSD)
 
     if(CMAKE_SYSTEM_NAME STREQUAL Darwin)
@@ -101,7 +103,7 @@ else()
     )
 endif(WIN32)
 
-target_link_libraries(coreclr ${CORECLR_LIBRARIES})
+target_link_libraries(coreclr ${CORECLR_LIBRARIES} ${VERSION_SCRIPT})
 
 if(WIN32)
 
