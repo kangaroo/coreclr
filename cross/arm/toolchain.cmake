@@ -1,4 +1,5 @@
 set(CROSS_ROOTFS $ENV{ROOTFS_DIR})
+set(CROSS_ROOTFS $ENV{ROOTFS_DIR})
 
 set(CMAKE_SYSTEM_NAME Linux)
 set(CMAKE_SYSTEM_VERSION 1)
@@ -10,7 +11,9 @@ add_compile_options(-mfpu=vfpv3)
 add_compile_options(--sysroot=${CROSS_ROOTFS})
 
 set(CROSS_LINK_FLAGS "${CROSS_LINK_FLAGS} -target arm-linux-gnueabihf")
-set(CROSS_LINK_FLAGS "${CROSS_LINK_FLAGS} -B ${CROSS_ROOTFS}/usr/lib/gcc/arm-linux-gnueabihf")
+if(DEFINED ENV{ROOTFS_LINKER_PATH})
+    set(CROSS_LINK_FLAGS "${CROSS_LINK_FLAGS} -B $ENV{ROOTFS_LINKER_PATH}")
+endif()
 set(CROSS_LINK_FLAGS "${CROSS_LINK_FLAGS} -L${CROSS_ROOTFS}/lib/arm-linux-gnueabihf")
 set(CROSS_LINK_FLAGS "${CROSS_LINK_FLAGS} --sysroot=${CROSS_ROOTFS}")
 

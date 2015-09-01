@@ -15,21 +15,38 @@ then
 fi
 
 # Set up the environment to be used for building with clang.
-if which "clang-$2.$3" > /dev/null 2>&1
-    then
-        export CC="$(which clang-$2.$3)"
-        export CXX="$(which clang++-$2.$3)"
-elif which "clang$2$3" > /dev/null 2>&1
-    then
-        export CC="$(which clang$2$3)"
-        export CXX="$(which clang++$2$3)"
-elif which clang > /dev/null 2>&1
-    then
-        export CC="$(which clang)"
-        export CXX="$(which clang++)"
-else
-    echo "Unable to find Clang Compiler"
-    exit 1
+if [ -z $CC ]; then
+    if which "clang-$2.$3" > /dev/null 2>&1
+        then
+            export CC="$(which clang-$2.$3)"
+            export CXX="$(which clang++-$2.$3)"
+    elif which "clang$2$3" > /dev/null 2>&1
+        then
+            export CC="$(which clang$2$3)"
+            export CXX="$(which clang++$2$3)"
+    elif which clang > /dev/null 2>&1
+        then
+            export CC="$(which clang)"
+            export CXX="$(which clang++)"
+    else
+        echo "Unable to find Clang Compiler"
+        exit 1
+    fi
+fi
+if [ -z $CXX ]; then
+    if which "clang-$2.$3" > /dev/null 2>&1
+        then
+            export CXX="$(which clang++-$2.$3)"
+    elif which "clang$2$3" > /dev/null 2>&1
+        then
+            export CXX="$(which clang++$2$3)"
+    elif which clang > /dev/null 2>&1
+        then
+            export CXX="$(which clang++)"
+    else
+        echo "Unable to find Clang++ Compiler"
+        exit 1
+    fi
 fi
 
 build_arch="$4"
